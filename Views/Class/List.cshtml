@@ -1,0 +1,12 @@
+﻿
+@{
+    ViewBag.Title = "List";
+}
+
+<h2>List of Coures</h2>
+@foreach (var classes in Model)
+{
+
+    <p>@classes.classname - @classes.classcode</p>
+}
+

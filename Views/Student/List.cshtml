@@ -1,0 +1,12 @@
+﻿
+@{
+    ViewBag.Title = "List";
+}
+
+<h2>List of Student with StudentID</h2>
+
+@foreach (var student in Model)
+{
+
+    <p>@student.studentfname @student.studentlname - @student.studentnumber</p>
+}
