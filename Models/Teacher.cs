@@ -13,6 +13,8 @@ namespace SchoolProject.Models
 
         public string employeenum { get; set;}
 
+        public DateTime hiredate { get; set; }
+
         public decimal salary { get; set;}
     }
 

@@ -17,3 +17,10 @@ textarea {
 .teacherinfo h2{
     color: blue;
 }
+.inputline {
+    margin-bottom: 20px;
+}
+.delbutton {
+    background-color:red;
+    color: white;
+}

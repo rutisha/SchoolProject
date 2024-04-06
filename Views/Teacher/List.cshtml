@@ -9,10 +9,14 @@
     <input type="submit" value="Search" />
 </form>
 
-    @foreach(var teacher in Model)
-            {
-                
-                <div class="col-md-12"><a href="/Teacher/Show/@teacher.teacherid">@teacher.teacherfname @teacher.teacherlname</a></div>
-            }
+<nav>
+    <a class="navlink" href="/Teacher/New">Add New Teacher</a>
+</nav> <br />
+
+@foreach (var teacher in Model)
+{
+
+    <div class="col-md-12"><a href="/Teacher/Show/@teacher.teacherid">@teacher.teacherfname @teacher.teacherlname</a></div>
+}
 
 

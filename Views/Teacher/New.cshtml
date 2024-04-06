@@ -1,0 +1,111 @@
+﻿
+@{
+    ViewBag.Title = "New";
+}
+
+<nav>
+    <a class="navlink" href="/Teacher/List">Back To Teachers</a>
+</nav>
+
+<h2>New Teacher</h2>
+<script>
+    window.onload = function () {
+        var formHandle = document.forms.createForm;
+
+        formHandle.onsubmit = process;
+        function process() {
+
+            var TeacherFname = document.getElementById("TeacherFname");
+            var TeacherLname = document.getElementById("TeacherLname");
+            var EmployeeNumber = document.getElementById("EmployeeNumber");
+            var HireDate = document.getElementById("HireDate");
+            var Salary = document.getElementById("Salary");
+
+
+            if (TeacherFname.value === "") {
+                alert("Enter Teacher's first name.");
+                return false;
+            }
+            else if (TeacherLname.value === "") {
+                alert("Enter Teacher's last name.");
+                return false;
+            }
+            else if (EmployeeNumber.value === "") {
+                alert("Enter Employee number starts with 'T'.");
+                return false;
+            }
+            else if (HireDate.value === "") {
+                alert("Enter the hiredate.");
+                return false;
+            }
+            else if (Salary.value === "") {
+                alert("Enter Teachers salary.");
+                return false;
+            }
+
+           /// var url = "/Teacher/Create"; // Adjust URL according to your backend
+
+           /* var xhr = new XMLHttpRequest();
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        console.log(response);
+                        alert("Teacher added successfully!");
+                    } else {
+                        alert("Error adding teacher");
+                    }
+                }
+            };
+
+            var data = JSON.stringify({
+                TeacherFname: TeacherFname,
+                TeacherLname: TeacherLname,
+                EmployeeNumber: EmployeeNumber,
+                HireDate: HireDate,
+                Salary: Salary
+            });
+
+           xhr.send(data); */
+        }
+    }
+</script>
+
+<form method="POST" action="/Teacher/Create" name="createForm">
+    <div class="inputline">
+        <label for="TeacherFname">First Name:</label>
+        <input type="text" id="TeacherFname" name="TeacherFname" />
+    </div>
+    <div  class="inputline">
+        <label for="TeacherLname">Last Name:</label>
+        <input type="text" id="TeacherLname" name="TeacherLname" />
+    </div>
+    <div  class="inputline">
+        <label for="EmployeeNumber">Employee Number:</label>
+        <input type="text" id="EmployeeNumber" name="EmployeeNumber" />
+    </div>
+    <div class="inputline">
+        <label for="hireDate">Hire date:</label>
+        <input type="date" id="HireDate" name="hireDate" />
+    </div>
+    <div  class="inputline">
+        <label for="salary">Salary:</label>
+        <input type="number" id="Salary" name="salary" />
+    </div>
+
+
+    <!-- Error Messages Section -->
+    @if (ViewBag.Error != null)
+    {
+        <p class="error-message">@ViewBag.Error</p>
+        
+    }
+    <div  class="inputline">
+         <input type="submit" value="Create Teacher" />
+    </div>
+   
+</form>
+

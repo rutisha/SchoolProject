@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using MySql.Data.MySqlClient;
 using SchoolProject.Models;
+using System.Web.Http.Cors;
 
 namespace SchoolProject.Controllers
 {
@@ -36,7 +34,7 @@ namespace SchoolProject.Controllers
             MySqlCommand Cmd = Conn.CreateCommand();
 
             //SQL QUERY
-            Cmd.CommandText = "Select * from teachers where lower(teacherfname) like lower('%"+Searchkey+"%') or lower(teacherlname) like lower('%"+Searchkey+"%')";
+            Cmd.CommandText = "Select * from teachers where lower(teacherfname) like lower('%" + Searchkey + "%') or lower(teacherlname) like lower('%" + Searchkey + "%')";
 
             //Gather Results of Query into a variable
             MySqlDataReader ResultSet = Cmd.ExecuteReader();
@@ -45,7 +43,7 @@ namespace SchoolProject.Controllers
             List<Teacher> TeachersNames = new List<Teacher>();
 
             //Loop through Each Row
-            while(ResultSet.Read())
+            while (ResultSet.Read())
             {
                 //Access Column information by the column name as an index
                 int Teacherid = ResultSet.GetInt32("teacherid");
@@ -89,7 +87,7 @@ namespace SchoolProject.Controllers
             MySqlDataReader ResultSet = Cmd.ExecuteReader();
 
             //Create an empty list of Teachers Names
-            
+
 
             //Loop through Each Row
             while (ResultSet.Read())
@@ -98,15 +96,17 @@ namespace SchoolProject.Controllers
                 int Teacherid = ResultSet.GetInt32("teacherid");
                 string Teacherfname = ResultSet["teacherfname"].ToString();
                 string Teacherlname = ResultSet["teacherlname"].ToString();
-                string EmployeeNum = ResultSet["employeenumber"].ToString() ;
+                string EmployeeNum = ResultSet["employeenumber"].ToString();
+                DateTime HireDate = (DateTime)ResultSet["hiredate"];
                 decimal Salary = ResultSet.GetDecimal("salary");
 
                 //Add to the Teachers List
-               
+
                 Teacherinfo.teacherid = Teacherid;
                 Teacherinfo.teacherfname = Teacherfname;
                 Teacherinfo.teacherlname = Teacherlname;
                 Teacherinfo.employeenum = EmployeeNum;
+                Teacherinfo.hiredate = HireDate;
                 Teacherinfo.salary = Salary;
 
             }
@@ -117,5 +117,74 @@ namespace SchoolProject.Controllers
             //Return the list of teacher names
             return Teacherinfo;
         }
+
+        /// <summary>
+        /// This method will add a new teacher data in the database
+        /// </summary>
+        /// <param name="NewTeacher">Teacher Object</param>
+        /// <returns></returns>
+        /// <example>
+        /// api/TeacherData/AddTeacher
+        /// POST DATA: Teacher Object
+        /// </example>
+
+        [HttpPost]
+        [EnableCors(origins:"*",methods:"*",headers:"*")]
+        public void AddTeacher([FromBody] Teacher NewTeacher)
+        {
+            MySqlConnection Conn = School.AccessDatabase();
+
+
+            Conn.Open();
+
+            MySqlCommand Cmd = Conn.CreateCommand();
+
+            string query = "Insert into teachers (teacherid, teacherfname, teacherlname, employeenumber, hiredate, salary) values (@TeacherId, @TeacherFname, @TeacherLname, @EmployeeNumber, @HireDate, @Salary)";
+
+            Cmd.CommandText = query;
+
+            Cmd.Parameters.AddWithValue("@TeacherId", NewTeacher.teacherid);
+            Cmd.Parameters.AddWithValue("@TeacherFname", NewTeacher.teacherfname);
+            Cmd.Parameters.AddWithValue("@TeacherLname", NewTeacher.teacherlname);
+            Cmd.Parameters.AddWithValue("@EmployeeNumber", NewTeacher.employeenum);
+            Cmd.Parameters.AddWithValue("@HireDate", NewTeacher.hiredate);
+            Cmd.Parameters.AddWithValue("@Salary", NewTeacher.salary);
+
+
+            Cmd.Prepare();
+            Cmd.ExecuteNonQuery();
+
+            Conn.Close();
+
+        }
+
+        /// <summary>
+        /// This method will delete a teacher data in the database
+        /// </summary>
+        /// <param name="TeacherId">The teacher id primary key</param>
+        /// <example>
+        /// POST: api/teacherdata/deleteteacher/2
+        /// </example>
+        [HttpPost]
+        public void DeleteTeacher(int id)
+        {
+            MySqlConnection Conn = School.AccessDatabase();
+
+            Conn.Open();
+
+            MySqlCommand cmd = Conn.CreateCommand();
+
+            string query = "DELETE from teachers where teacherid=@id";
+            cmd.CommandText = query;
+
+            cmd.Parameters.AddWithValue("@id", id);
+
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+
+            Conn.Close();
+
+        }
+
     }
 }
