@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Http.Cors;
@@ -36,6 +37,12 @@ namespace SchoolProject.Controllers
 
         }
 
+        //GET : /Teacher/Ajax_New
+        public ActionResult Ajax_New()
+        {
+            return View();
+
+        }
         //POST : /Teacher/Create
         [HttpPost]
         [EnableCors(origins: "*", methods: "*", headers: "*")]
@@ -79,6 +86,71 @@ namespace SchoolProject.Controllers
             TeacherDataController controller = new TeacherDataController();
             controller.DeleteTeacher(id);
             return RedirectToAction("List");
+        }
+        //GET: /Teacher/Update/{id}
+        public ActionResult Update(int id)
+        {
+            //Need to get the information about the teacher
+            TeacherDataController controller = new TeacherDataController();
+            Teacher SelectedTeacher = controller.Teachersinfo(id);
+
+            return View(SelectedTeacher);
+        }
+
+        /// <summary>
+        /// Receives a POST request containing information about an existing teacher in the system,
+        /// with new values. Conveys this information to the API, and redirects to the "Teacher Show"
+        /// page of our updated teacher.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="TeacherFname"></param>
+        /// <param name="TeacherLname"></param>
+        /// <param name="HireDate"></param>
+        /// <param name="Salary"></param>
+        /// <returns>A dynamic webpage which provides the current information of the teacher.</returns>
+        /// <example>
+        /// POST : Teacher/Update/10
+        /// {
+        /// "TeacherFname": "Rutisha";
+        /// "TeacherLname":   "Patel";
+        /// "HireDate": "8/01/2024";
+        /// "Salary": "40";
+        /// }
+        /// </example>
+        // POST: /Teacher/Update/{id}
+        [HttpPost]
+        public ActionResult Update(int id, string TeacherFname, string TeacherLname, string EmployeeNumber, DateTime?HireDate, decimal?Salary)
+        {
+            TeacherDataController controller = new TeacherDataController();
+            if (string.IsNullOrEmpty(TeacherFname) || string.IsNullOrEmpty(TeacherLname) || string.IsNullOrEmpty(EmployeeNumber) || !HireDate.HasValue || !Salary.HasValue)
+            {
+                ViewBag.Error = "All fields are required.";
+                Teacher SelectedTeacher = controller.Teachersinfo(id);
+                return View("Update", SelectedTeacher);
+
+            }
+
+            Teacher UpdatedTeacher = new Teacher();
+            UpdatedTeacher.teacherfname = TeacherFname;
+            UpdatedTeacher.teacherlname = TeacherLname;
+            UpdatedTeacher.employeenum = EmployeeNumber;
+            UpdatedTeacher.hiredate = (DateTime)HireDate;
+            UpdatedTeacher.salary = Salary ?? 0;
+
+          
+            controller.UpdateTeacher(id, UpdatedTeacher);
+
+            return RedirectToAction("Show/" + id);
+
+        }
+
+        //GET : /Teacher/Ajax_Update
+        public ActionResult Ajax_Update(int id)
+        {
+            TeacherDataController controller = new TeacherDataController();
+            Teacher SelectedTeacher = controller.Teachersinfo(id);
+
+            return View(SelectedTeacher);
         }
 
     }

@@ -4,6 +4,7 @@ using System.Web.Http;
 using MySql.Data.MySqlClient;
 using SchoolProject.Models;
 using System.Web.Http.Cors;
+using System.Diagnostics;
 
 namespace SchoolProject.Controllers
 {
@@ -184,6 +185,43 @@ namespace SchoolProject.Controllers
 
             Conn.Close();
 
+        }
+        /// <summary>
+        /// Updates a teacher on the MySQL database. 
+        /// </summary>
+        /// <param name="TeacherId">The id of the teacher in the system</param>
+        /// <param name="UpdateTeacher">post content, all teacher attributes</param>
+        /// <example>POST : /api/TeacherData/UpdateTeacher/7
+        /// {"teacherfname":"Christine", "teacherlname":"Bittle", "hiredate":"","salary":"6000"}
+        /// </example>
+        [HttpPost]
+        [Route("api/TeacherData/UpdateTeacher/{TeacherId}")]
+        public void UpdateTeacher(int TeacherId, [FromBody] Teacher UpdatedTeacher)
+        { 
+            string query = "UPDATE teachers set teacherfname=@TeacherFname, teacherlname=@TeacherLname, employeenumber = @EmployeeNum, hiredate=@HireDate, salary=@Salary WHERE teacherid=@TeacherId";
+
+            MySqlConnection Conn = School.AccessDatabase();
+
+            //Open the connection between the web server and data base
+            Conn.Open();
+
+
+            //Establish a new command (query) for our database
+            MySqlCommand cmd = Conn.CreateCommand();
+            cmd.CommandText = query;
+            //SQL Query
+
+            cmd.Parameters.AddWithValue("@TeacherId", TeacherId);
+            cmd.Parameters.AddWithValue("@TeacherFname", UpdatedTeacher.teacherfname);
+            cmd.Parameters.AddWithValue("@TeacherLname", UpdatedTeacher.teacherlname);
+            cmd.Parameters.AddWithValue("@EmployeeNum", UpdatedTeacher.employeenum);
+            cmd.Parameters.AddWithValue("@HireDate", UpdatedTeacher.hiredate);
+            cmd.Parameters.AddWithValue("@Salary", UpdatedTeacher.salary);
+            cmd.Prepare();
+
+            cmd.ExecuteNonQuery();
+
+            Conn.Close();
         }
 
     }
